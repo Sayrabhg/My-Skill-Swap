@@ -6,7 +6,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.skillswap.dto.UserProfileDTO;
+import com.example.skillswap.model.Skill;
 import com.example.skillswap.model.User;
+import com.example.skillswap.repository.SkillRepository;
 import com.example.skillswap.repository.UserRepository;
 
 @Service
@@ -14,6 +17,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private SkillRepository skillRepository;
 
     // ---------------- GET ALL USERS (ADMIN) ----------------
     public List<User> getAllUsers() {
@@ -32,12 +38,18 @@ public class UserService {
 
     // ---------------- UPDATE USER BY ID (ADMIN) ----------------
     public User updateUser(String id, User updatedUser) {
-        Optional<User> existingOpt = userRepository.findById(id);
-        if (existingOpt.isPresent()) {
-            User existing = existingOpt.get();
-            copyUserFields(existing, updatedUser);
-            return userRepository.save(existing);
+
+        User user = userRepository.findById(id).orElse(null);
+
+        if (user != null) {
+            user.setName(updatedUser.getName());
+            user.setBio(updatedUser.getBio());
+            user.setLanguage(updatedUser.getLanguage());
+            user.setAvatar(updatedUser.getAvatar());
+
+            return userRepository.save(user);
         }
+
         return null;
     }
 
@@ -80,5 +92,17 @@ public class UserService {
         if (updated.getBio() != null) existing.setBio(updated.getBio());
         if (updated.getAvatar() != null) existing.setAvatar(updated.getAvatar());
         // Tokens, rating, trustScore should be updated only by admin
+    }
+    
+    public UserProfileDTO getUserProfile(String userId) {
+
+        User user = userRepository.findById(userId).orElseThrow();
+        List<Skill> skills = skillRepository.findByUserId(userId);
+
+        UserProfileDTO dto = new UserProfileDTO();
+        dto.setUser(user);
+        dto.setSkills(skills);
+
+        return dto;
     }
 }
