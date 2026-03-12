@@ -12,10 +12,10 @@ import lombok.Data;
 public class SwapSession {
 
     @Id
-    private Long id;
+    private String id;  // <-- Must be String for MongoDB ObjectId
 
-    private Long mentorId;
-    private Long studentId;
+    private String mentorId;   // use String for user IDs
+    private String studentId;  // use String for user IDs
 
     private String skill;
 

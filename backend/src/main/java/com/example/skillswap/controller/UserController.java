@@ -51,9 +51,10 @@ public class UserController {
             return ResponseEntity.status(403).body("Default admin cannot be deleted");
         }
 
-        boolean isAdmin = authentication.getAuthorities()
+        boolean isAdmin = authentication != null && authentication.getAuthorities() != null &&
+                authentication.getAuthorities()
                 .stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+                .anyMatch(auth -> "ROLE_ADMIN".equals(auth.getAuthority()));
 
         boolean deleted = userService.deleteUserByEmail(email);
 

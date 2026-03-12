@@ -5,23 +5,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 
+@Document(collection = "skill_requests")
 @Data
-@Document(collection = "skills")
-public class Skill {
+public class SkillRequest {
 
     @Id
     private String id;
 
+    private String requesterId;
+    private String mentorId;
+
     private String skillOffered;
     private String skillWanted;
-    private String category;
 
-    private String userId;
+    private String status; // PENDING ACCEPTED REJECTED
 
 }
 
 // example
-//User: Saurabh
-//
-//Offers → Spring Boot
-//Wants → React
+// Saurabh → requests Spring Boot from John
