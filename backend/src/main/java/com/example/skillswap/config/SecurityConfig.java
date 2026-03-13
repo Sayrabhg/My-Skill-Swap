@@ -40,7 +40,7 @@ public class SecurityConfig {
             .and()
             .csrf().disable()
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/auth/**", "/api/debug/**", "/api/skills/**").permitAll()
+                .requestMatchers("/", "/api/auth/**", "/api/contact**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
