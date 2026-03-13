@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import {
     getProfile,
     getSkillsByUserId,
     getAllUsers,
-    getAllSkills
+    getAllSkills,
+    deleteSkill
 } from "../../api/api";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog";
 
 export default function UserDashboard() {
 
@@ -14,6 +23,36 @@ export default function UserDashboard() {
     const [skills, setSkills] = useState([]);
     const [recommendations, setRecommendations] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState("");
+    const [status, setStatus] = useState("success");
+
+    const handleDelete = async (skillId) => {
+
+        try {
+
+            await deleteSkill(skillId);
+
+            setSkills((prev) =>
+                prev.filter((skill) => skill.id !== skillId)
+            );
+
+            setDialogMessage("Skill deleted successfully 🗑️");
+            setStatus("success");
+            setDialogOpen(true);
+
+        } catch (error) {
+
+            console.error("Delete failed", error);
+
+            setDialogMessage("Failed to delete skill ❌");
+            setStatus("error");
+            setDialogOpen(true);
+
+        }
+
+    };
 
     useEffect(() => {
 
@@ -49,6 +88,7 @@ export default function UserDashboard() {
                 const allSkills = resAllSkills.data || [];
 
                 // Smart matching
+                // Smart matching
                 const recommended = allUsers.filter((otherUser) => {
 
                     if (otherUser.id === userId) return false;
@@ -58,13 +98,21 @@ export default function UserDashboard() {
                     );
 
                     const otherOffers = otherUserSkills.map(s => s.skillOffered);
+                    const otherWants = otherUserSkills.map(s => s.skillWanted);
 
-                    // show users who offer skills I want
+                    // Condition 1: They offer what I want
                     const canTeachMe = otherOffers.some(skill =>
                         myWantedSkills.includes(skill)
                     );
 
-                    return canTeachMe;
+                    // Condition 2: I offer what they want
+                    const iCanTeachThem = myOfferedSkills.some(skill =>
+                        otherWants.includes(skill)
+                    );
+
+                    // Perfect swap match
+                    return canTeachMe && iCanTeachThem;
+
                 });
 
                 setRecommendations(recommended);
@@ -96,6 +144,24 @@ export default function UserDashboard() {
     return (
 
         <div className="min-h-screen bg-gray-50 p-6">
+
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogContent className="text-center">
+                    <DialogHeader>
+                        <DialogTitle>SkillSwap Skills</DialogTitle>
+
+                        <DialogDescription
+                            className={`text-base mt-2 font-medium ${status === "success"
+                                ? "text-green-500"
+                                : "text-red-500"
+                                }`}
+                        >
+                            {dialogMessage}
+                        </DialogDescription>
+
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
 
             {/* Header */}
 
@@ -165,30 +231,50 @@ export default function UserDashboard() {
                     Your Skills
                 </h2>
 
-                {skills.length ? (
+                <div className="flex flex-wrap justify-between">
+                    {skills.length ? (
 
-                    <div className="flex flex-wrap gap-3">
+                        <div className="flex flex-wrap gap-3">
 
-                        {skills.map((skill) => (
+                            {skills.map((skill) => (
 
-                            <span
-                                key={skill.id}
-                                className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium"
-                            >
-                                {skill.skillOffered} → {skill.skillWanted}
-                            </span>
+                                <div
+                                    key={skill.id}
+                                    className="relative group"
+                                >
 
-                        ))}
+                                    <span
+                                        className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium flex items-center gap-2"
+                                    >
+                                        {skill.skillOffered} → {skill.skillWanted}
+                                    </span>
 
-                    </div>
+                                    <button
+                                        onClick={() => handleDelete(skill.id)}
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition"
+                                    >
+                                        ✕
+                                    </button>
 
-                ) : (
+                                </div>
 
-                    <p className="text-gray-500">
-                        You have not added any skills yet.
-                    </p>
+                            ))}
 
-                )}
+                        </div>
+
+                    ) : (
+
+                        <p className="text-gray-500">
+                            You have not added any skills yet.
+                        </p>
+
+                    )}
+
+                    <Button onClick={() => navigate("/add-skill")}>
+                        Add Skill
+                    </Button>
+
+                </div>
 
             </div>
 
@@ -226,9 +312,13 @@ export default function UserDashboard() {
                                     Perfect Skill Swap Match
                                 </p>
 
-                                <Button size="sm">
+                                <Button
+                                    size="sm"
+                                    onClick={() => navigate(`/profile/${u.email}`)}
+                                >
                                     View Profile
                                 </Button>
+
 
                             </div>
 

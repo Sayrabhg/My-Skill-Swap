@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import chatgptsskillsswap from "../../../assets/ChatGPTSkillSwap.png";
 import { ShineBorder } from "@/components/ui/shine-border";
+import { Eye, EyeOff, Globe } from "lucide-react";
 import { loginUser, registerUser, getProfile } from "../../../api/api";
 import {
     Dialog,
@@ -15,8 +16,11 @@ import {
 const LoginSignup = () => {
 
     const navigate = useNavigate();
-
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
+    const [status, setStatus] = useState("success");
+    const [customLanguage, setCustomLanguage] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dialogMessage, setDialogMessage] = useState("");
 
@@ -25,7 +29,8 @@ const LoginSignup = () => {
         name: "",
         email: "",
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
+        language: ""
     });
 
     const handleChange = (e) => {
@@ -61,6 +66,7 @@ const LoginSignup = () => {
                 );
 
                 setDialogMessage("Login Successful 🎉");
+                setStatus("success");
                 setDialogOpen(true);
 
                 setTimeout(() => {
@@ -72,6 +78,7 @@ const LoginSignup = () => {
                 if (formData.password !== formData.confirmPassword) {
 
                     setDialogMessage("Passwords do not match ❌");
+                    setStatus("error");
                     setDialogOpen(true);
                     return;
                 }
@@ -83,6 +90,7 @@ const LoginSignup = () => {
                 });
 
                 setDialogMessage("Registration Successful 🎉");
+                setStatus("success");
                 setDialogOpen(true);
 
                 setIsLogin(true);
@@ -93,6 +101,7 @@ const LoginSignup = () => {
             console.error(error);
 
             setDialogMessage("Invalid credentials ❌");
+            setStatus("error");
             setDialogOpen(true);
 
         }
@@ -111,8 +120,13 @@ const LoginSignup = () => {
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="text-center">
                     <DialogHeader>
-                        <DialogTitle>Skill Swap Login</DialogTitle>
-                        <DialogDescription className="text-base mt-2">
+                        <DialogTitle>Skill Swap</DialogTitle>
+                        <DialogDescription
+                            className={`text-base mt-2 font-medium ${status === "success"
+                                ? "text-green-500"
+                                : "text-red-500"
+                                }`}
+                        >
                             {dialogMessage}
                         </DialogDescription>
                     </DialogHeader>
@@ -151,24 +165,86 @@ const LoginSignup = () => {
                         className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500"
                     />
 
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500"
-                    />
+                    {!isLogin && (
+                        <div className="space-y-2">
+
+                            <label className="text-sm font-medium text-gray-200 flex items-center gap-2">
+                                <Globe size={16} />
+                                Preferred Language
+                            </label>
+
+                            <div className="relative">
+
+                                <select
+                                    name="language"
+                                    value={formData.language}
+                                    onChange={handleChange}
+                                    className="w-full bg-white/10 text-gray-100 border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                                >
+                                    <option className="bg-dark" value="">Select Language</option>
+                                    <option className="bg-dark" value="English">English</option>
+                                    <option className="bg-dark" value="Hindi">Hindi</option>
+                                    <option className="bg-dark" value="Marathi">Marathi</option>
+                                    <option className="bg-dark" value="Spanish">Spanish</option>
+                                    <option className="bg-dark" value="French">French</option>
+                                    <option className="bg-dark" value="Other">Other</option>
+                                </select>
+
+                            </div>
+
+                            {formData.language === "Other" && (
+                                <input
+                                    type="text"
+                                    placeholder="Enter your language (Example: Japanese)"
+                                    value={customLanguage}
+                                    onChange={(e) => setCustomLanguage(e.target.value)}
+                                    className="w-full bg-white/20 text-gray-200 border border-gray-300 rounded-lg px-4 py-2 mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                                />
+                            )}
+
+                        </div>
+                    )}
+
+                    <div className="relative">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            placeholder="Password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:border-indigo-500"
+                        />
+
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300"
+                        >
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                    </div>
 
                     {!isLogin && (
-                        <input
-                            type="password"
-                            name="confirmPassword"
-                            placeholder="Confirm Password"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500"
-                        />
+                        <div className="relative">
+                            <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                name="confirmPassword"
+                                placeholder="Confirm Password"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:outline-none focus:border-indigo-500"
+                            />
+
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setShowConfirmPassword(!showConfirmPassword)
+                                }
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300"
+                            >
+                                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
                     )}
 
                     <button
