@@ -30,7 +30,7 @@ const RightIllustration = () => {
             <img
                 src={gemini}
                 alt="Skill Exchange"
-                className="w-full max-w-lg object-cover"
+                className="w-full object-cover"
                 style={{ borderRadius: "2rem" }} // extra round corners
             />
         </motion.div>

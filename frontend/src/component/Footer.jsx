@@ -52,10 +52,9 @@ const Footer = () => {
                     <div className="mb-4"><span className="text-white font-semibold">Quick Links</span></div>
                     <ul className="space-y-2">
                         <li><Link to="/" className="hover:text-indigo-400">Home</Link></li>
-                        <li><Link to="/about" className="hover:text-indigo-400">About</Link></li>
-                        <li><Link to="/all-skills" className="hover:text-indigo-400">Browse Skills</Link></li>
-                        <li><Link to="/how-it-works" className="hover:text-indigo-400">How It Works</Link></li>
-                        <li><Link to="/contact" className="hover:text-indigo-400">Contact</Link></li>
+                        <li><Link to="/learn" className="hover:text-indigo-400">Learn</Link></li>
+                        <li><Link to="/earn-tokens" className="hover:text-indigo-400">Earn Tokens</Link></li>
+                        <li><Link to="/teach" className="hover:text-indigo-400">Teach</Link></li>
                     </ul>
                 </div>
 
