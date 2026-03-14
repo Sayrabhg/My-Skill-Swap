@@ -40,7 +40,7 @@ const HeroSection = () => {
                 {/* Left Content */}
                 <div className="animate-fadeIn">
 
-                    <h1 className="text-5xl font-bold leading-tight text-gray-200">
+                    <h1 className="text-3xl lg:text-5xl font-bold leading-tight text-gray-200">
                         Your Expertise is Your{" "}
                         <span className="text-card relative">
                             Currency
@@ -59,11 +59,11 @@ const HeroSection = () => {
                         {/* Input */}
                         <input
                             type="text"
-                            className="flex-1 px-6 py-3 outline-none bg-transparent relative z-10"
+                            className="flex-1 p-2 lg:px-6 lg:py-3 outline-none bg-transparent relative z-10"
                         />
 
                         {/* Animated Placeholder */}
-                        <div className="absolute left-6 text-gray-400 pointer-events-none group-focus-within:hidden">
+                        <div className="absolute overflow-hidden h-6 left-6 text-gray-400 pointer-events-none group-focus-within:hidden">
                             <Typewriter
                                 words={suggestions}
                                 loop={true}
@@ -78,17 +78,17 @@ const HeroSection = () => {
                         <CoolMode>
                             <button
                                 onClick={handleSearch}
-                                className="bg-primary hover:bg-primaryLight text-white px-6 py-3 flex items-center gap-2 cursor-pointer transition relative z-10"
+                                className="bg-primary hover:bg-primaryLight text-white px-4 lg:px-6 py-3 flex items-center gap-2 cursor-pointer transition relative z-10"
                             >
                                 <Search size={18} />
-                                Search
+                                <span className="hidden sm:inline">Search</span>
                             </button>
                         </CoolMode>
 
                     </div>
 
                     {/* CTA Buttons */}
-                    <div className="mt-8 flex gap-4">
+                    <div className="mt-8 flex flex-wrap lg:justify-start justify-center gap-4">
 
                         <CoolMode>
                             <button className="bg-primary hover:bg-primaryLight text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2 shadow-lg hover:shadow-primary/40 transition transform hover:-translate-y-1">

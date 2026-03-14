@@ -54,7 +54,7 @@ const HowItWorks = () => {
             </h2>
 
             {/* Stepper */}
-            <div className="flex flex-col md:flex-row items-center justify-center gap-12 relative w-full max-w-6xl">
+            <div className="flex flex-wrap items-center justify-center gap-12 relative w-full max-w-6xl">
                 {steps.map((step, index) => (
                     <motion.div
                         key={step.id}

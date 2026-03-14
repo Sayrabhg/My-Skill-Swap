@@ -38,9 +38,10 @@ const Navbar = () => {
     };
 
     const navLinks = [
-        { name: "Learn", href: "/learn" },
-        { name: "Earn Tokens", href: "/earn-tokens" },
-        { name: "Teach", href: "/teach" },
+        { name: "About", href: "/about" },
+        { name: "Browse Skills", href: "/all-skills" },
+        { name: "How It Works", href: "/how-it-works" },
+        { name: "Contact", href: "/contact" },
     ];
 
     // Get user initials if no avatar
