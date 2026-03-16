@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { updateProfile } from "../../api/api";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { CheckCircle, AlertCircle, XCircle } from "lucide-react";
 
 export default function UpdateProfile() {
     const [user, setUser] = useState({
@@ -25,6 +26,7 @@ export default function UpdateProfile() {
     const navigate = useNavigate();
     const [dialogMessage, setDialogMessage] = useState("");
     const [showDialog, setShowDialog] = useState(false);
+    const [dialogType, setDialogType] = useState("success");
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -46,12 +48,18 @@ export default function UpdateProfile() {
             setLoading(true);
             const res = await updateProfile(user);
             localStorage.setItem("user", JSON.stringify(res.data));
-            setDialogMessage("Profile updated successfully"); // <-- show success
+
+            setDialogMessage("Profile updated successfully");
+            setDialogType("success");
             setShowDialog(true);
+
         } catch (error) {
             console.error(error);
-            setDialogMessage("Profile update failed"); // <-- show error
+
+            setDialogMessage("Profile update failed. Please try again.");
+            setDialogType("error");
             setShowDialog(true);
+
         } finally {
             setLoading(false);
         }
@@ -225,12 +233,42 @@ export default function UpdateProfile() {
 
             {/* Dialog */}
             {showDialog && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-80 text-center">
-                        <p className="mb-4">{dialogMessage}</p>
-                        <Button onClick={handleDialogClose} className="w-full">
+                <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
+                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-96 text-center animate-slideFromLeft">
+
+                        {/* Icon */}
+                        <div className="flex justify-center mb-3">
+                            <div
+                                className={`p-3 rounded-full ${dialogType === "success" ? "bg-green-100" : "bg-red-100"
+                                    }`}
+                            >
+                                {dialogType === "success" ? (
+                                    <CheckCircle size={40} className="text-green-600" />
+                                ) : (
+                                    <XCircle size={40} className="text-red-600" />
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Message */}
+                        <h2 className="text-xl font-semibold mb-2">
+                            {dialogType === "success" ? "Success" : "Error"}
+                        </h2>
+
+                        <p
+                            className={`mb-6 ${dialogType === "success" ? "text-green-600" : "text-red-600"
+                                }`}
+                        >
+                            {dialogMessage}
+                        </p>
+                        {/* Button */}
+                        <Button
+                            onClick={handleDialogClose}
+                            className="w-full bg-green-600 hover:bg-green-700 text-white rounded-lg"
+                        >
                             OK
                         </Button>
+
                     </div>
                 </div>
             )}

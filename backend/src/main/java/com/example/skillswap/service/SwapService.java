@@ -15,31 +15,52 @@ public class SwapService implements SwapSessionService {
     @Autowired
     private SwapRepository swapRepository;
 
+    @Autowired
+    private ChatService chatRoomService;
+
+    // Create swap request
     @Override
     public SwapSession createSession(SwapSession session) {
-        if(session.getUserId().equals(session.getSwapUserId())) {
+
+        if (session.getUserId().equals(session.getSwapUserId())) {
             throw new IllegalArgumentException("Cannot swap with yourself.");
         }
-        session.setStatus("PENDING"); // default status
+
+        session.setStatus("PENDING");
         return swapRepository.save(session);
     }
 
-    // Get all swap sessions where logged-in user is involved
+    // Get sessions where user is involved
     @Override
     public List<SwapSession> getSessionsByUser(String userId) {
         return swapRepository.findByUserIdOrSwapUserId(userId, userId);
     }
 
-    // Update status of a swap session
+    // Update swap session status
     @Override
     public SwapSession updateSessionStatus(String id, String status) {
+
         SwapSession session = swapRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
+
         session.setStatus(status.toUpperCase());
-        return swapRepository.save(session);
+
+        SwapSession updatedSession = swapRepository.save(session);
+
+        // CREATE CHAT ROOM WHEN SESSION BECOMES ACTIVE
+        if ("ACTIVE".equalsIgnoreCase(updatedSession.getStatus())) {
+
+            chatRoomService.createRoom(
+                    updatedSession.getSwapUserId(),
+                    updatedSession.getUserId(),
+                    updatedSession.getId()
+            );
+        }
+
+        return updatedSession;
     }
 
-    // Get all sessions (optional admin view)
+    // Admin - get all sessions
     @Override
     public List<SwapSession> getAllSessions() {
         return swapRepository.findAll();
@@ -48,12 +69,13 @@ public class SwapService implements SwapSessionService {
     // Delete expired sessions
     @Override
     public void deleteExpiredSessions() {
+
         List<SwapSession> allSessions = swapRepository.findAll();
         LocalDateTime now = LocalDateTime.now();
 
         allSessions.stream()
-            .filter(session -> session.getScheduledTime() != null
-                    && session.getScheduledTime().isBefore(now))
-            .forEach(session -> swapRepository.delete(session));
+                .filter(session -> session.getScheduledTime() != null
+                        && session.getScheduledTime().isBefore(now))
+                .forEach(session -> swapRepository.delete(session));
     }
 }
