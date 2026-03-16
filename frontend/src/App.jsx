@@ -26,6 +26,7 @@ import MentorRequests from './component/page/pages/MentorRequests';
 import AddReview from './component/page/pages/AddReview';
 import AllReviews from './component/page/pages/AllReviews';
 import UserData from './component/page/pages/UserData';
+import ChatPage from './component/page/pages/ChatPage';
 
 // Create a wrapper component to handle conditional header/footer
 const Layout = ({ children }) => {
@@ -77,6 +78,7 @@ function App() {
           <Route path="/review/:userId" element={<AddReview />} />
           <Route path="/dashboard/reviews" element={<AllReviews />} />
           <Route path="/dashboard/users" element={<UserData />} />
+          <Route path="/chat/:sessionId/:mentorId" element={<ChatPage />} />
 
         </Routes>
       </Layout>

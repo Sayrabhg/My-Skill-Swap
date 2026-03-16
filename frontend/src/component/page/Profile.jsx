@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProfile, updateProfile } from "../../api/api";
+import { getProfile, updateProfile, getSkillsByUserId } from "../../api/api";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Pencil, Globe, Phone, AtSign, MapPin, Github, Linkedin, X } from "lucide-react";
@@ -7,6 +7,7 @@ import Loading from "./components/Loading";
 
 export default function Profile() {
     const [user, setUser] = useState(null);
+    const [skills, setSkills] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showBioDialog, setShowBioDialog] = useState(false);
     const [newBio, setNewBio] = useState("");
@@ -20,12 +21,18 @@ export default function Profile() {
                 const res = await getProfile();
                 setUser(res.data);
                 localStorage.setItem("user", JSON.stringify(res.data));
+
+                // fetch skills using user id
+                const skillsRes = await getSkillsByUserId(res.data.id);
+                setSkills(skillsRes.data);
+
             } catch (error) {
                 console.error(error);
             } finally {
                 setLoading(false);
             }
         };
+
         fetchUser();
     }, []);
 
@@ -116,16 +123,15 @@ export default function Profile() {
                 <div className="bg-white rounded-xl shadow p-6">
                     <div className="flex justify-between items-center mb-3">
                         <h3 className="text-lg font-semibold">Skills</h3>
-                        <Pencil size={18} className="text-gray-400 cursor-pointer" />
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        {user.skills?.length > 0 ? (
-                            user.skills.map((skill, i) => (
+                        {skills.length > 0 ? (
+                            skills.map((skill) => (
                                 <span
-                                    key={i}
+                                    key={skill.id}
                                     className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm"
                                 >
-                                    {skill}
+                                    {skill.skillOffered}
                                 </span>
                             ))
                         ) : (
@@ -140,9 +146,9 @@ export default function Profile() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
                         <div className="flex items-center gap-2"><Phone size={16} /> {user.mobileNumber || "Not provided"}</div>
                         <div className="flex align-baseline text-left gap-2"><MapPin size={16} className="mt-1" /> {user.address || "Not provided"}, {user.city || "-"}, {user.state || "-"}, {user.country || "-"}, {user.postalCode || "-"}</div>
-                        <div className="flex items-center gap-2"><Globe size={16} /> {user.website || "Not provided"}</div>
-                        <div className="flex items-center gap-2"><Linkedin size={16} /> {user.linkedin || "Not provided"}</div>
-                        <div className="flex items-center gap-2"><Github size={16} /> {user.github || "Not provided"}</div>
+                        <div className="flex items-center gap-2"><Globe size={16} /> <a href={user.website} target="_blank" className="text-blue-600 hover:underline" rel="noopener noreferrer">{user.website || "Not provided"}</a></div>
+                        <div className="flex items-center gap-2"><Linkedin size={16} /> <a href={user.linkedin} target="_blank" className="text-blue-600 hover:underline" rel="noopener noreferrer">{user.linkedin || "Not provided"}</a></div>
+                        <div className="flex items-center gap-2"><Github size={16} /> <a href={user.github} target="_blank" className="text-blue-600 hover:underline" rel="noopener noreferrer">{user.github || "Not provided"}</a></div>
                         <div className="flex items-center gap-2"><AtSign size={16} /> Gender: {user.gender || "Not provided"}</div>
                     </div>
                 </div>
