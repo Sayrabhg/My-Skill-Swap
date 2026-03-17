@@ -1,17 +1,73 @@
 import { useEffect, useState } from "react";
-import { getMySwapSessions, updateSwapSessionStatus } from "../../../api/api";
+import { getMyTeachingSessions, updateSessionStatus, createChatRoom } from "../../../api/api";
 import { Button } from "@/components/ui/button";
 import Loading from "../components/Loading";
+import ChatDialog from "./ChatPage";
 
 export default function MentorSessions() {
     const [sessions, setSessions] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [chatOpen, setChatOpen] = useState(false);
+    const [roomId, setRoomId] = useState(null);
+    const [createdRooms, setCreatedRooms] = useState({});
+
+    const createRoomAndOpenChat = async (session) => {
+        try {
+            const roomData = {
+                swapSessionId: session.id,
+                userAId: session.user1Id, // learner ID
+                userBId: session.user2Id  // mentor ID
+            };
+
+            console.log("Creating room with:", roomData);
+
+            const res = await createChatRoom(roomData);
+
+            if (res?.data) {
+                console.log("Room created:", res.data);
+
+                // Set roomId and open chat
+                setRoomId(res.data.id);   // assuming backend returns created room with `id`
+                setChatOpen(true);
+            }
+
+        } catch (error) {
+            console.error("Failed to create chat room:", error);
+            alert(error?.response?.data || "Failed to create chat room");
+        }
+    };
+
+    const createRoom = async (session) => {
+        try {
+            const roomData = {
+                swapSessionId: session.id,
+                userAId: session.user1Id, // learner ID
+                userBId: session.user2Id  // mentor ID
+            };
+
+            console.log("Creating room with:", roomData);
+
+            const res = await createChatRoom(roomData);
+
+            if (res?.data) {
+                alert("Chat room created successfully");
+                console.log("Room:", res.data);
+
+                // Mark this session as having a room
+                setCreatedRooms(prev => ({ ...prev, [session.id]: res.data.id }));
+            }
+
+        } catch (error) {
+            console.error("Failed to create chat room:", error);
+            alert(error?.response?.data || "Failed to create chat room");
+        }
+    };
 
     // Fetch sessions for logged-in mentor
     useEffect(() => {
         const fetchSessions = async () => {
             try {
-                const res = await getMySwapSessions();
+                const res = await getMyTeachingSessions();
                 setSessions(res.data || []);
             } catch (error) {
                 console.error("Failed to fetch sessions:", error);
@@ -26,7 +82,7 @@ export default function MentorSessions() {
     // Update session status
     const handleUpdateStatus = async (sessionId, status) => {
         try {
-            await updateSwapSessionStatus(sessionId, status);
+            await updateSessionStatus(sessionId, status);
             // Update local state
             setSessions(prev =>
                 prev.map(s => (s.id === sessionId ? { ...s, status } : s))
@@ -80,9 +136,9 @@ export default function MentorSessions() {
                                 Status:
                                 <span
                                     className={`ml-2 font-semibold 
-                                        ${session.status === "ACCEPTED"
+                                        ${session.status === "active"
                                             ? "text-green-600"
-                                            : session.status === "REJECTED"
+                                            : session.status === "rejected"
                                                 ? "text-red-600"
                                                 : "text-yellow-600"
                                         }`}
@@ -92,12 +148,13 @@ export default function MentorSessions() {
                             </p>
 
                             <div className="flex gap-2">
-                                {session.status === "PENDING" && (
+
+                                {session.status === "pending" && (
                                     <>
                                         <Button
                                             size="sm"
                                             className="bg-green-600 hover:bg-green-700"
-                                            onClick={() => handleUpdateStatus(session.id, "ACCEPTED")}
+                                            onClick={() => handleUpdateStatus(session.id, "active")}
                                         >
                                             Accept
                                         </Button>
@@ -105,27 +162,60 @@ export default function MentorSessions() {
                                         <Button
                                             size="sm"
                                             variant="destructive"
-                                            onClick={() => handleUpdateStatus(session.id, "REJECTED")}
+                                            onClick={() => handleUpdateStatus(session.id, "rejected")}
                                         >
                                             Reject
                                         </Button>
                                     </>
                                 )}
 
-                                {session.status === "ACCEPTED" && (
-                                    <Button
-                                        size="sm"
-                                        className="bg-blue-600 hover:bg-blue-700"
-                                        onClick={() => handleUpdateStatus(session.id, "COMPLETED")}
-                                    >
-                                        Complete
-                                    </Button>
+                                {session.status === "active" && (
+                                    <>
+                                        <Button
+                                            size="sm"
+                                            className="bg-blue-600 hover:bg-blue-700"
+                                            onClick={() => handleUpdateStatus(session.id, "completed")}
+                                        >
+                                            Complete
+                                        </Button>
+
+                                        {createdRooms[session.id] ? (
+                                            <Button
+                                                size="sm"
+                                                className="bg-indigo-600 hover:bg-indigo-700"
+                                                onClick={() => {
+                                                    setRoomId(createdRooms[session.id]);
+                                                    setChatOpen(true);
+                                                }}
+                                            >
+                                                Chat
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                size="sm"
+                                                className="bg-indigo-600 hover:bg-indigo-700"
+                                                onClick={() => createRoom(session)}
+                                            >
+                                                Create Room
+                                            </Button>
+                                        )}
+                                    </>
                                 )}
+
                             </div>
                         </div>
                     ))}
                 </div>
             )}
+
+            <ChatDialog
+                open={chatOpen}
+                setOpen={setChatOpen}
+                roomId={roomId}
+                userId={localStorage.getItem("userId")}
+            />
         </div>
     );
 }
+
+
