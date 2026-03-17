@@ -3,6 +3,7 @@ package com.example.skillswap.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
@@ -128,5 +129,25 @@ public class ChatController {
         }
 
         return "Delete failed";
+    }
+    
+    
+    
+    @GetMapping("/chats/rooms")
+    public ResponseEntity<List<ChatRoom>> getRoomsForUser(Authentication authentication) {
+
+        // Logged-in user email from token
+        String email = authentication.getName();
+
+        // Convert email → userId
+        User user = userService.getUserByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String userId = user.getId();
+
+        // Get rooms for this user
+        List<ChatRoom> rooms = chatService.getRoomsByUserId(userId);
+
+        return ResponseEntity.ok(rooms);
     }
 }

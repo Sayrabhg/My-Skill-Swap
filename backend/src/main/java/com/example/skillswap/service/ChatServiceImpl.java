@@ -2,6 +2,7 @@ package com.example.skillswap.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -100,6 +101,21 @@ public class ChatServiceImpl implements ChatService {
         chatMessageRepo.deleteById(chatId);
 
         return true;
+    }
+    
+    @Override
+    public List<ChatRoom> getRoomsByUserId(String userId) {
+        return chatRoomRepo.findAll()
+                .stream()
+                .filter(r -> r.getUserAId().equals(userId) || r.getUserBId().equals(userId))
+                .collect(Collectors.toList());
+    }
+
+    // ✅ Save chat message (used by /chat/messages endpoint)
+    @Override
+    public ChatMessage saveMessage(ChatMessage msg) {
+        // You can add extra validation here if needed
+        return chatMessageRepo.save(msg);
     }
     
     public List<ChatRoom> getAllRooms() {
