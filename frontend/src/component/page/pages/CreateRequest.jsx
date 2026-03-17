@@ -55,13 +55,20 @@ export default function CreateRequest() {
 
     const handleSubmit = async () => {
 
+        if (!scheduledTime || !tokenAmount) {
+            setDialogMessage("Please fill all fields");
+            setStatus("error");
+            setDialogOpen(true);
+            return;
+        }
+
         try {
 
             setLoading(true);
 
             const sessionData = {
                 skill: skill,
-                scheduledTime: scheduledTime,
+                scheduledTime: new Date(scheduledTime).toISOString(),
                 tokenAmount: Number(tokenAmount)
             };
 
@@ -75,7 +82,6 @@ export default function CreateRequest() {
                 navigate(-1);
             }, 1500);
 
-            setSkill("");
             setScheduledTime("");
             setTokenAmount("");
 
@@ -83,16 +89,16 @@ export default function CreateRequest() {
 
             console.error(error);
 
-            setDialogMessage("Failed to send request");
+            setDialogMessage(
+                error?.response?.data || "Failed to send request"
+            );
+
             setStatus("error");
             setDialogOpen(true);
 
         } finally {
-
             setLoading(false);
-
         }
-
     };
 
     return (
@@ -148,7 +154,7 @@ export default function CreateRequest() {
 
                     <input
                         type="datetime-local"
-                        min={new Date().toISOString().slice(0, 16)}
+                        min={new Date().toISOString().slice(0,16)}
                         value={scheduledTime}
                         onChange={(e) => setScheduledTime(e.target.value)}
                         className="w-full border rounded-lg p-3 mt-1"

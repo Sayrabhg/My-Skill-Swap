@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Rocket, MoreVertical } from "lucide-react";
 import { CoolMode } from "@/components/ui/cool-mode";
+import NotificationBar from "./page/pages/NotificationBar";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false); // mobile dropdown
@@ -34,9 +35,9 @@ const Navbar = () => {
         localStorage.removeItem("userId");
         localStorage.removeItem("user");
         setUser(null);
-        navigate("/");
+        navigate("/"); // navigate to home
+        window.location.reload(); // force refresh so all components see logout
     };
-
     const navLinks = [
         { name: "About", href: "/about" },
         { name: "Browse Skills", href: "/all-skills" },
@@ -81,6 +82,8 @@ const Navbar = () => {
                                 {link.name}
                             </Link>
                         ))}
+
+                        <NotificationBar loggedInUser={user} />
 
                         {user ? (
                             <div className="relative flex items-center gap-2" ref={dropdownRef}>
