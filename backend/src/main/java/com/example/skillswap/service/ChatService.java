@@ -15,5 +15,8 @@ public interface ChatService {
 
     List<ChatMessage> getMessages(String roomId);
     
+    List<ChatRoom> getRoomsByUserId(String userId);
+    ChatMessage saveMessage(ChatMessage msg);
+    
     boolean deleteMessage(String chatId, String loggedUserId);
 }
