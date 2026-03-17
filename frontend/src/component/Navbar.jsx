@@ -171,8 +171,10 @@ const Navbar = () => {
                         )}
                     </div>
 
-                    <NotificationBar loggedInUser={user} />
-                    
+                    <div className="lg:hidden">
+                        <NotificationBar loggedInUser={user} />
+                    </div>
+
                     {/* Mobile Menu Button */}
                     <div className="lg:hidden relative top-[2px] lg:top-0">
                         <button onClick={() => setIsOpen1(!isOpen1)}>
