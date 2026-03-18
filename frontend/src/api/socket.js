@@ -6,7 +6,7 @@ let stompClient = null;
 export const connectSocket = (roomId, onTypingReceived) => {
     if (stompClient && stompClient.connected) return; // ✅ prevent reconnect
 
-    const socket = new SockJS("http://localhost:1213/ws");
+    const socket = new SockJS("https://my-skill-swap-backend-production.up.railway.app/ws");
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, () => {
