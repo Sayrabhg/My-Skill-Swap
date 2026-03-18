@@ -30,6 +30,7 @@ import ChatPage from './component/page/pages/ChatPage';
 import ChatRoomFetch from './component/page/pages/ChatRoomFetch';
 import NotificationBar from './component/page/pages/NotificationBar';
 import NotificationsPage from './component/page/pages/NotificationsPage';
+import WelcomePage from './component/page/auth/WelcomePage';
 
 // Create a wrapper component to handle conditional header/footer
 const Layout = ({ children }) => {
@@ -55,7 +56,10 @@ function App() {
       <Layout>
         <Routes>
           <Route path='/' element={<Home />} />
+
           <Route path='/auth' element={<LoginSignup />} />
+          <Route path="/welcome" element={<WelcomePage />} />
+
           <Route path='/about' element={<About />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/trending-swaps" element={<TrendingSwaps />} />

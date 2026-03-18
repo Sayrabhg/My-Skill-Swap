@@ -43,43 +43,45 @@ const LoginSignup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         setLoading(true);
 
         try {
-
             if (isLogin) {
-
                 const res = await loginUser({
                     email: formData.email,
-                    password: formData.password
+                    password: formData.password,
                 });
 
                 const token = res.data.token;
                 const userId = res.data.userId;
 
                 localStorage.setItem("token", token);
-                localStorage.setItem("userId", userId);
 
+                // Get full user profile
                 const userRes = await getProfile(userId);
+                const userData = userRes.data;
 
-                localStorage.setItem(
-                    "user",
-                    JSON.stringify(userRes.data)
-                );
+                localStorage.setItem("user", JSON.stringify(userData));
 
                 setDialogMessage("Login Successful 🎉");
                 setStatus("success");
                 setDialogOpen(true);
 
+                // ---------------- FIRST LOGIN CHECK ----------------
+                const firstLogin = userData?.firstLogin === true || userData?.FirstLogin === true;
+
+                // Navigate after short delay so dialog can be seen
                 setTimeout(() => {
-                    navigate("/dashboard");
-                }, 1500);
+                    if (firstLogin) {
+                        navigate("/welcome"); // first time login
+                    } else {
+                        navigate("/dashboard"); // subsequent logins
+                    }
+                }, 1000);
 
             } else {
-
+                // SIGNUP LOGIC
                 if (formData.password !== formData.confirmPassword) {
-
                     setDialogMessage("Passwords do not match ❌");
                     setStatus("error");
                     setDialogOpen(true);
@@ -89,7 +91,9 @@ const LoginSignup = () => {
                 await registerUser({
                     name: formData.name,
                     email: formData.email,
-                    password: formData.password
+                    password: formData.password,
+                    language:
+                        formData.language === "Other" ? customLanguage : formData.language,
                 });
 
                 setDialogMessage("Registration Successful 🎉");
@@ -98,19 +102,13 @@ const LoginSignup = () => {
 
                 setIsLogin(true);
             }
-
         } catch (error) {
-
             console.error(error);
-
             setDialogMessage("Invalid credentials ❌");
             setStatus("error");
             setDialogOpen(true);
-
         } finally {
-
             setLoading(false);
-
         }
     };
 
