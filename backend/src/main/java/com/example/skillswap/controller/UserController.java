@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.skillswap.dto.UserUpdateRequest;
 import com.example.skillswap.model.User;
 import com.example.skillswap.repository.UserRepository;
 import com.example.skillswap.service.UserService;
@@ -35,9 +36,13 @@ public class UserController {
 
     // ---------------- UPDATE CURRENT LOGGED-IN USER ----------------
     @PutMapping("/me")
-    public ResponseEntity<?> updateCurrentUser(Authentication authentication, @RequestBody User user) {
+    public ResponseEntity<?> updateCurrentUser(
+            Authentication authentication, 
+            @RequestBody UserUpdateRequest userUpdateRequest) {
+
         String email = authentication.getName();
-        User updated = userService.updateUserByEmail(email, user);
+        User updated = userService.updateUserByEmail(email, userUpdateRequest);
+
         if (updated != null) {
             return ResponseEntity.ok(updated);
         }
@@ -78,7 +83,7 @@ public class UserController {
         return ResponseEntity.status(404).body("User not found");
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/user/{id}")
     public ResponseEntity<User> updateUser(
             @PathVariable String id,
             @RequestBody User updatedUser

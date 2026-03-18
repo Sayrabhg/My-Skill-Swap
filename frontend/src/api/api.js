@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "https://my-skill-swap-backend-production.up.railway.app/api",
-    // baseURL: "https://localhost:1213/api",
+    // baseURL: "https://my-skill-swap-backend-production.up.railway.app/api",
+    baseURL: "http://localhost:1213/api",
 });
 
 // Attach token automatically
@@ -20,6 +20,7 @@ export const registerUser = (data) => API.post("/auth/signup", data);
 
 // ================= USERS =================
 export const getProfile = () => API.get(`/users/me`);
+export const updateUser = (userId, data) => API.put(`/users/user/${userId}`, data);
 export const updateProfile = (data) => API.put(`/users/me`, data);
 export const deleteProfile = () => API.delete(`/users/me`);
 

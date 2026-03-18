@@ -42,6 +42,10 @@ export default function UserDashboard() {
             setStatus("success");
             setDialogOpen(true);
 
+            const userRes = await getProfile(userId);
+            const userData = userRes.data;
+            console.log("User Data:", userData);
+
         } catch (error) {
 
             console.error("Delete failed", error);
@@ -337,7 +341,11 @@ export default function UserDashboard() {
 
                     ) : (
 
-                        <p className="text-gray-500" style={{webkitTextStrokeWidth:'medium'}}>
+                        <p className="text-gray-500" style={{
+                            color: "white",
+                            WebkitTextStrokeWidth: "1px",
+                            WebkitTextStrokeColor: "black",
+                        }}>
                             You have not added any skills yet.
                         </p>
 

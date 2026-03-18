@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.skillswap.dto.UserProfileDTO;
+import com.example.skillswap.dto.UserUpdateRequest;
 import com.example.skillswap.model.Skill;
 import com.example.skillswap.model.User;
 import com.example.skillswap.repository.SkillRepository;
@@ -37,39 +38,34 @@ public class UserService {
     }
 
     // ---------------- UPDATE USER BY ID (ADMIN) ----------------
-    public User updateUser(String id, User updatedUser) {
-        User user = userRepository.findById(id).orElse(null);
+    public User updateUserByEmail(String email, UserUpdateRequest updatedUser) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) return null;
 
-        if (user != null) {
-            // Basic info
-            user.setName(updatedUser.getName());
-            user.setBio(updatedUser.getBio());
-            user.setLanguage(updatedUser.getLanguage());
-            user.setAvatar(updatedUser.getAvatar());
+        if (updatedUser.getName() != null) user.setName(updatedUser.getName());
+        if (updatedUser.getBio() != null) user.setBio(updatedUser.getBio());
+        if (updatedUser.getLanguage() != null) user.setLanguage(updatedUser.getLanguage());
+        if (updatedUser.getAvatar() != null) user.setAvatar(updatedUser.getAvatar());
 
-            // Contact info
-            user.setEmail(updatedUser.getEmail());
-            user.setMobileNumber(updatedUser.getMobileNumber());
+        if (updatedUser.getEmail() != null) user.setEmail(updatedUser.getEmail());
+        if (updatedUser.getMobileNumber() != null) user.setMobileNumber(updatedUser.getMobileNumber());
 
-            // Personal info
-            user.setGender(updatedUser.getGender());
+        if (updatedUser.getGender() != null) user.setGender(updatedUser.getGender());
 
-            // Address info
-            user.setAddress(updatedUser.getAddress());
-            user.setCity(updatedUser.getCity());
-            user.setState(updatedUser.getState());
-            user.setCountry(updatedUser.getCountry());
-            user.setPostalCode(updatedUser.getPostalCode());
+        if (updatedUser.getAddress() != null) user.setAddress(updatedUser.getAddress());
+        if (updatedUser.getCity() != null) user.setCity(updatedUser.getCity());
+        if (updatedUser.getState() != null) user.setState(updatedUser.getState());
+        if (updatedUser.getCountry() != null) user.setCountry(updatedUser.getCountry());
+        if (updatedUser.getPostalCode() != null) user.setPostalCode(updatedUser.getPostalCode());
 
-            // Optional / social links
-            user.setWebsite(updatedUser.getWebsite());
-            user.setLinkedin(updatedUser.getLinkedin());
-            user.setGithub(updatedUser.getGithub());
+        if (updatedUser.getWebsite() != null) user.setWebsite(updatedUser.getWebsite());
+        if (updatedUser.getLinkedin() != null) user.setLinkedin(updatedUser.getLinkedin());
+        if (updatedUser.getGithub() != null) user.setGithub(updatedUser.getGithub());
 
-            return userRepository.save(user);
+        if (updatedUser.getIsFirstLogin() != null) {
+            user.setFirstLogin(updatedUser.getIsFirstLogin());
         }
-
-        return null;
+        return userRepository.save(user);
     }
 
     // ---------------- UPDATE CURRENT USER BY EMAIL (JWT) ----------------
