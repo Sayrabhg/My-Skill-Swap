@@ -53,31 +53,33 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ChatMessage sendMessage(ChatMessage message, String loggedUserId) {
 
-        // 1️⃣ Get chat room
         ChatRoom room = chatRoomRepo.findById(message.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Chat room not found"));
 
-        // 2️⃣ Check if logged user belongs to this room
         if (!room.getUserAId().equals(loggedUserId) &&
             !room.getUserBId().equals(loggedUserId)) {
 
             throw new RuntimeException("Unauthorized: You are not part of this chat");
         }
 
-        // 3️⃣ Check swap session
         SwapSession session = swapSessionRepo
                 .findById(room.getSwapSessionId())
                 .orElseThrow(() -> new RuntimeException("Swap session not found"));
 
-        // 4️⃣ Allow chat only when session active
         if (!"active".equalsIgnoreCase(session.getStatus())) {
             throw new RuntimeException("Chat allowed only for active sessions");
         }
 
-        // 5️⃣ Force senderId (do NOT trust frontend)
+        // ✅ FORCE sender
         message.setSenderId(loggedUserId);
 
-        // 6️⃣ Save message
+        // ✅ SET DATE + TIME HERE (IMPORTANT)
+        message.setDate(java.time.LocalDate.now());
+        message.setTime(
+            java.time.LocalTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a"))
+        );
+
         return chatMessageRepo.save(message);
     }
 
