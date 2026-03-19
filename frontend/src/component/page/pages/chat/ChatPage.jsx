@@ -209,7 +209,7 @@ export default function ChatPage() {
                         >
                             {msg.message}
                             <div className="text-xs text-right opacity-70 mt-1">
-                                {new Date(msg.timestamp).toLocaleTimeString()}
+                                {msg.date} <span> </span>{msg.time}
                             </div>
                         </div>
                     </div>
