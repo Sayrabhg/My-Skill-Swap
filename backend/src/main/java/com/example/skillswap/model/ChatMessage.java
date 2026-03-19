@@ -17,13 +17,11 @@ public class ChatMessage {
     private String senderId;
     private String message;
 
-    private LocalDate date; // listener will set this
-    private String time;    // listener will set this
+    private LocalDate date; // server will set this in IST
+    private String time;    // server will set this in IST (HH:mm format)
 
-    // Empty constructor is enough; listener will handle timestamps
     public ChatMessage() {}
 
-    // Optional convenience constructor
     public ChatMessage(String roomId, String senderId, String message) {
         this.roomId = roomId;
         this.senderId = senderId;
