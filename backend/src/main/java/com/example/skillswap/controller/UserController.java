@@ -70,14 +70,13 @@ public class UserController {
     }
 
     // ---------------- GET USER PROFILE WITH SKILLS ----------------
-    @GetMapping("/me/profile")
-    public ResponseEntity<?> getCurrentUserProfile(Authentication authentication) {
-        String email = authentication.getName();
-        Optional<User> userOpt = userService.getUserByEmail(email);
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<?> getUserProfileById(@PathVariable String id) {
+
+        Optional<User> userOpt = userService.getUserById(id);
 
         if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            return ResponseEntity.ok(userService.getUserProfile(user.getId()));
+            return ResponseEntity.ok(userService.getUserProfile(id));
         }
 
         return ResponseEntity.status(404).body("User not found");

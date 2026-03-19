@@ -37,20 +37,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors() // enable CORS
+            .cors()
             .and()
             .csrf().disable()
             .authorizeHttpRequests(auth -> auth
-                // Public routes — contact form is now accessible to anyone
-                .requestMatchers("/", "/api/auth/**", "/api/contact/**", "/ws/**").permitAll()
-                // All other routes require authentication
+                // ✅ Public routes
+                .requestMatchers(
+                    "/", 
+                    "/api/auth/**", 
+                    "/api/contact/**", 
+                    "/ws/**",
+                    "api/users/profile/**"   // 🔥 ADD THIS
+                ).permitAll()
+
+                // 🔒 बाकी secured
                 .anyRequest().authenticated()
             )
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .exceptionHandling().accessDeniedHandler(accessDeniedHandler);
 
-        // JWT filter applies only to secured routes
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -80,8 +86,6 @@ public class SecurityConfig {
 
         return source;
     }
-    
-   
     
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
